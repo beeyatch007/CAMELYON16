@@ -57,7 +57,7 @@ def process_image(fold):
                 poswriter = csv.writer(pos)
                 poswriter.writerow(['WSI_name', 'WSI_level_row_col', 'Label'])
                 
-                for i in range(1, -1, -1):
+                for i in range(7, -1, -1):
                     pcount = 0
                     temp = patch_folder + "\\" + str(i)
                     if not os.path.isdir(temp):
