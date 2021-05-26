@@ -21,7 +21,7 @@ def process_image(fold):
     print(fold)
     target_img = fold[:-4]
     tmg = 'D:\\patches\\' + target_img
-    count = 0
+    patchsize = 256
 
     if not os.path.isdir(tmg):
         os.mkdir(tmg)
@@ -57,7 +57,7 @@ def process_image(fold):
                 poswriter = csv.writer(pos)
                 poswriter.writerow(['WSI_name', 'WSI_level_row_col', 'Label'])
                 
-                for i in range(7, -1, -1):
+                for i in range(1, -1, -1):
                     pcount = 0
                     temp = patch_folder + "\\" + str(i)
                     if not os.path.isdir(temp):
@@ -78,14 +78,17 @@ def process_image(fold):
                     dimsT = imageT.getLevelDimensions(i)
                     ds = imageO.getLevelDownsample(i)
                     
-                    for j in range(0, dimsO[0] - 512, 128):
-                        for k in range(0, dimsO[1] - 512, 128):
+                    # print(dimsO[0])
+                    # print(dimsO[1])
 
-                            temp_patchO = imageO.getUCharPatch(int(j * ds), int(k * ds), 512, 512, i)
+                    for j in range(0, dimsO[0] - patchsize, int(patchsize/4)):
+                        for k in range(0, dimsO[1] - patchsize, int(patchsize/4)):
+
+                            temp_patchO = imageO.getUCharPatch(int(j * ds), int(k * ds), patchsize, patchsize, i)
           
-                            temp_patchA = imageA.getUCharPatch(int(j * ds), int(k * ds), 512, 512, i)
+                            temp_patchA = imageA.getUCharPatch(int(j * ds), int(k * ds), patchsize, patchsize, i)
 
-                            temp_patchT = imageT.getUCharPatch(int(j * ds), int(k * ds), 512, 512, i)
+                            temp_patchT = imageT.getUCharPatch(int(j * ds), int(k * ds), patchsize, patchsize, i)
                                   
 
                             if np.sum(temp_patchA) != 0:
@@ -97,8 +100,8 @@ def process_image(fold):
                                 cv2.imwrite(tip + '\\' + 'patch_' +  str(i) + '_' + str(j) + '_' + str(k) + '_' + str(label) + '.png', temp_patchO)
 
                     ncount = 0
-                    x = list(range(0, dimsO[0] - 512, 128))
-                    y = list(range(0, dimsO[1] - 512, 128))
+                    x = list(range(0, dimsO[0] - patchsize, int(patchsize/4)))
+                    y = list(range(0, dimsO[1] - patchsize, int(patchsize/4)))
                     coordinate = []
                     while True:
                         
@@ -106,11 +109,11 @@ def process_image(fold):
                         k = random.choice(y)
                         if (j,k) in coordinate:
                             continue
-                        temp_patchO = imageO.getUCharPatch(int(j * ds), int(k * ds), 512, 512, i)
+                        temp_patchO = imageO.getUCharPatch(int(j * ds), int(k * ds), patchsize, patchsize, i)
 
-                        temp_patchA = imageA.getUCharPatch(int(j * ds), int(k * ds), 512, 512, i)
+                        temp_patchA = imageA.getUCharPatch(int(j * ds), int(k * ds), patchsize, patchsize, i)
 
-                        temp_patchT = imageT.getUCharPatch(int(j * ds), int(k * ds), 512, 512, i)
+                        temp_patchT = imageT.getUCharPatch(int(j * ds), int(k * ds), patchsize, patchsize, i)
 
             
 
@@ -128,7 +131,7 @@ def process_image(fold):
                         if pcount == ncount:
                             break
                             
-                    print(f'Resolution level = {i}\nPositive count = {pcount}\nNegative count = {ncount}\n')
+                    print(f'Resolution level = {i}\tPositive count = {pcount}\tNegative count = {ncount}')
 
     except Exception as e:
         print('Exception is', e)
