@@ -20,14 +20,14 @@ inputDir = 'D:\\tumor'
 def process_image(fold):
     print(fold)
     target_img = fold[:-4]
-    tmg = 'D:\\patches\\' + target_img
-    patchsize = 256
-
-    if not os.path.isdir(tmg):
-        os.mkdir(tmg)
-
-
     patch_folder = 'D:\\patches\\' + target_img
+    patchsize = 512
+
+    if not os.path.isdir(patch_folder):
+        os.mkdir(patch_folder)
+
+
+
     try:
         inpDirTissueMask = os.path.join('D:\\tissue_masks\\' + target_img + '_tissue_mask.tif')
         inpDirAnnoMask = os.path.join('D:\\tumor_masks\\' + target_img + '_mask.tif')
@@ -107,8 +107,13 @@ def process_image(fold):
                         
                         j = random.choice(x)
                         k = random.choice(y)
-                        if (j,k) in coordinate:
+
+                        if i == 7 and (j,k) in coordinate and random.uniform(0,1) > 0.9:
                             continue
+
+                        if i != 7 and (j,k) in coordinate:
+                            continue
+
                         temp_patchO = imageO.getUCharPatch(int(j * ds), int(k * ds), patchsize, patchsize, i)
 
                         temp_patchA = imageA.getUCharPatch(int(j * ds), int(k * ds), patchsize, patchsize, i)
